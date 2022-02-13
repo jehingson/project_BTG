@@ -1,5 +1,15 @@
-const { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLList } = require("graphql")
-const { User, Post, Comment } = require("../models")
+const { 
+    GraphQLObjectType, 
+    GraphQLID, 
+    GraphQLString, 
+    GraphQLList 
+} = require("graphql")
+
+const { 
+    User, 
+    Petition, 
+    Answer 
+} = require("../models")
 
 const UserType = new GraphQLObjectType({
     name: "UserType",
@@ -8,61 +18,63 @@ const UserType = new GraphQLObjectType({
         id: { type: GraphQLID },
         username: { type: GraphQLString },
         email: { type: GraphQLString },
-        displayName: { type: GraphQLString },
         createdAt: { type: GraphQLString },
+        role: { type: GraphQLString },
     }
 })
 
-const PostType = new GraphQLObjectType({
-    name: "PostType",
-    description: "Tipo de dato de la publicacion",
-    fields: () =>( {
+const PetitionType = new GraphQLObjectType({
+    name: 'PetitionType',
+    description: 'tipo de datos de las solicitud de cliente',
+    fields: {
         id: { type: GraphQLID },
-        title: { type: GraphQLString },
-        body: { type: GraphQLString },
+        name: { type: GraphQLString }
+    }
+})
+
+const QuestionType = new GraphQLObjectType({
+    name: 'QuestionType',
+    description: 'tipo de datos para las preguntas del cliente',
+    fields: () => ({
+        id: { type: GraphQLID },
+        question: { type: GraphQLString },
         createdAt: { type: GraphQLString },
-        author: {
-            type: UserType, resolve(parent) {
-                return User.findById(parent.authorId)
-            }
+        client: {
+            type: UserType,
+            resolve: (parent) => User.findById(parent.clientId)
         },
-        comments: {
-            type: new GraphQLList(CommentType),
-            resolve(parent) {
-                return Comment.find({postId: parent.id})
+        petition: {
+            type: PetitionType,
+            resolve: (parent) => Petition.findById(parent.petitionId)
+        },
+        answer: {
+            type: new GraphQLList(AnswerType),
+            resolve(parent){
+                return Answer.find({questionId: parent.id})
             }
+
         }
     })
 })
 
-const CommentType = new GraphQLObjectType({
-    name: "CommentType",
-    description: "tipo de dato de commentarios",
+const AnswerType = new GraphQLObjectType({
+    name: "AnswerType",
+    description: "Tipo de datos para las respuestas del administrador",
     fields: {
         id: { type: GraphQLID },
-        comment: { type: GraphQLString },
-        createdAt: { type: GraphQLString },
-        user: {
-            type: UserType, resolve(parent) {
-                console.log('parent', parent)
-                return User.findById(parent.userId)
-            }
-        },
-        post: {
-            type: PostType, resolve(parent) {
-                return Post.findById(parent.postId)
-            }
-        },
+        answer: { type: GraphQLString },
+        admin: {
+            type: UserType,
+            resolve: (parent) => User.findById(parent.adminId)
+        }
     }
 })
-
-
-
 
 
 
 module.exports = {
     UserType,
-    PostType,
-    CommentType
+    PetitionType,
+    QuestionType,
+    AnswerType
 }

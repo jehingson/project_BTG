@@ -1,7 +1,13 @@
 const { GraphQLString, GraphQLID } = require("graphql");
-const { User, Post, Comment } = require('../models')
+const { 
+    User, 
+    Question,
+    Petition, 
+    Answer 
+} = require('../models')
 const { createJWTToken } = require('../util/auth');
-const { PostType, CommentType } = require("./typeDefs");
+
+const bcrypt = require('bcrypt');
 
 const register = {
     type: GraphQLString,
@@ -10,17 +16,33 @@ const register = {
         username: { type: GraphQLString },
         email: { type: GraphQLString },
         password: { type: GraphQLString },
-        displayName: { type: GraphQLString },
     },
     resolve: async (_, args) => {
-        const { username, email, password, displayName } = args
-        const user = new User({ username, email, password, displayName })
-        await user.save()
-        const token = createJWTToken({ _id: user._id, username: user.username, email: user.email })
-        return token
+        try {
+            const { username, email, password } = args
+            const user = new User(
+                {
+                    username,
+                    email,
+                    password: await bcrypt.hash(password, 10)
+                })
+
+            await user.save()
+            console.log('user', user)
+            const token = createJWTToken(
+                {
+                    _id: user._id,
+                    username: user.username,
+                    email: user.email,
+                    role: user.role
+                })
+            return token
+        } catch (error) {
+            console.log('error', error)
+            throw new Error('Verifique la información, datos incorrectos o correo ya existente!')
+        }
     }
 };
-
 
 const login = {
     type: GraphQLString,
@@ -32,102 +54,66 @@ const login = {
     resolve: async (_, args) => {
         const { email, password } = args
         const user = await User.findOne({ email }).select('+password')
-        if (!user || password !== user.password) throw new Error('Usuario o contraseña incorrecto!')
-        const token = createJWTToken({ _id: user._id, username: user.username, email: user.email })
+        const validatePassword = await bcrypt.compare(password, user.password)
+        if (!user || !validatePassword) throw new Error('Usuario o contraseña incorrecto!')
+        const token = createJWTToken({ _id: user._id, username: user.username, email: user.email, role: user.role })
         return token
     }
 }
 
-
-const createPost = {
-    type: PostType,
-    description: "Crear nueva publicacion",
-    args: {
-        title: { type: GraphQLString },
-        body: { type: GraphQLString }
-    },
-    resolve: async (_, args, { user }) => {
-        const { title, body } = args
-        const post = new Post({ title, body, authorId: user._id })
-        await post.save()
-        return post
-    }
-}
-
-const updatePost = {
-    type: PostType,
-    description: "Update a post",
-    args: {
-        id: { type: GraphQLString },
-        title: { type: GraphQLString },
-        body: { type: GraphQLString }
-    },
-    resolve: async (_, args, { user }) => {
-        const { id, title, body } = args
-        if (!user) throw new Error("No autenticado!")
-        const post = await Post.findOneAndUpdate(
-            {
-                _id: id,
-                authorId: user._id
-            },
-            {
-                title,
-                body
-            }, {
-            new: true,
-            runValidators: true
-        }
-        )
-        return post
-    }
-}
-
-const deletePost = {
+const createQuestion = {
     type: GraphQLString,
-    description: "Eliminar una publicacion",
+    description: "Agregar una solicitud del cliente",
     args: {
-        postId: { type: GraphQLID }
+        question: { type: GraphQLString },
+        petitionId: { type: GraphQLID }
     },
-    resolve: async (_, { postId }, { user }) => {
-        if (!user) throw new Error("No autenticado!")
+    async resolve(_, { question, petitionId }, { user }) {
+        if (!user || user.role !== 'client') throw new Error("No autenticado!")
         try {
-            await Post.findOneAndDelete({
-                _id: postId,
-                authorId: user._id
+            await Petition.findById(petitionId)
+            const newQuestion = new Question({
+                clientId: user._id,
+                question,
+                petitionId
             })
-            return 'Publicacion eliminada'
+            await newQuestion.save()
+            return 'Solicitud creada con éxito'
+        } catch (error) {
+            throw new Error("Error en el servidor, verifique el tipo de solicitud")
+        }
+    }
+}
+
+const addAnswer = {
+    type: GraphQLString,
+    description: "Agregar un respuesta del admin a la solicitud del cliente",
+    args: {
+        answer: { type: GraphQLString },
+        questionId: { type: GraphQLID }
+    },
+    async resolve(_, { answer, questionId }, { user }) {
+        if (!user || user.role !== 'admin') throw new Error("No autenticado!")
+        try {
+            await Question.findById(questionId)
+            const newAnswer = new Answer({
+                answer,
+                questionId,
+                adminId: user._id
+            })
+            await newAnswer.save()
+            return 'Respuesta agregada con éxito.'
         } catch (error) {
             console.log('error', error)
-            throw new Error("Publicacion no encontrado")
+            throw new Error("Error en el servidor, verifique la solicitud")
         }
-    }
-}
 
-const addComment = {
-    type: CommentType,
-    description: "Agregar un comentario a un publicacion",
-    args: {
-        comment: { type: GraphQLString },
-        postId: { type: GraphQLID }
-    },
-    async resolve(_, { comment, postId }, { user }) {
-        console.log('user', user, comment, postId)
-        if (!user) throw new Error("No autenticado!")
-        const newComment = new Comment({
-            comment,
-            postId,
-            userId: user._id
-        })
-        return newComment.save()
     }
-
 }
 
 module.exports = {
     register,
     login,
-    createPost,
-    updatePost,
-    deletePost,
-    addComment
+    createQuestion,
+    addAnswer
 }

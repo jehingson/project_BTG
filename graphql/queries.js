@@ -1,6 +1,14 @@
 const { GraphQLList, GraphQLID } = require('graphql');
-const { User, Post } = require('../models');
-const { UserType, PostType } = require('./typeDefs');
+const { 
+    User, 
+    Petition, 
+    Question 
+} = require('../models');
+const { 
+    UserType, 
+    PetitionType,
+     QuestionType 
+    } = require('./typeDefs');
 
 const users = {
     type: new GraphQLList(UserType),
@@ -21,28 +29,37 @@ const getUser = {
     }
 }
 
-const posts = {
-    type: new GraphQLList(PostType),
-    description: 'Todas las publicaciones',
-    resolve: () => Post.find()
-
+const getOneQuestion = {
+    type: QuestionType,
+    description: 'Detalle de una solicitud',
+    args: {
+        id: { type: GraphQLID }
+    },
+    resolve: (_, { id }, { user }) => {
+        if (!user) throw new Error("No autenticado!")
+        return Question.findById(id)
+    }
 }
 
-const getPost = {
-    type: PostType,
-    description: 'Detalle de una publicacion',
-    args: {
-        id: {type: GraphQLID}
-    },
-    resolve(_, args){
-        const post = Post.findById(args.id)
-        return post
+const allQuestion = {
+    type: new GraphQLList(QuestionType),
+    description: 'Todas las solicitudes del clientes',
+    resolve: (_, __, { user }) => {
+        if (!user) throw new Error("No autenticado!")
+        return Question.find().sort({ createdAt: -1 })
     }
+}
+
+const allPetition = {
+    type: new GraphQLList(PetitionType),
+    description: 'Tipos de solicitud del cliente',
+    resolve: () => Petition.find()
 }
 
 module.exports = {
     users,
     getUser,
-    posts,
-    getPost
+    allPetition,
+    allQuestion,
+    getOneQuestion
 }

@@ -16,10 +16,11 @@ const userSchema = new Schema({
         unique: true,
         match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Provide a valida email address']
     },
-    displayName:{
+    role: {
         type: String,
-        required: true,
-    },
+        enum : ['client','admin'],
+        default: 'client'
+    }
 },{
     timestamps: true,
     versionKey: false,
