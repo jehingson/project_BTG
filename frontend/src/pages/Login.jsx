@@ -4,11 +4,11 @@ import LoginRegister from '../components/LoginRegister';
 
 
 export default function Login() {
-  return <LoginWrapper>
+  return (
+    <LoginWrapper>
       {/* Login */}
       <LoginRegister />
-    
-  </LoginWrapper>;
+    </LoginWrapper>);
 }
 
 

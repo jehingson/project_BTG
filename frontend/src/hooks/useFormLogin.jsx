@@ -51,6 +51,7 @@ export const useFormLogin = (initialForm, validateFrom, register) => {
             activateAuth({...user})
         },
         onError: (error) => {
+            console.log('err', error)
             notifyErrors(error.graphQLErrors[0].message)
         }
     })

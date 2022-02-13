@@ -5,6 +5,7 @@ import CreateQuestion from './CreateQuestion'
 
 
 function HomeClient() {
+  
   return (
     <ClientContent>
       <CreateQuestion />
@@ -23,6 +24,7 @@ overflow-y: auto;
   flex: .6;
 }
 @media(max-width: 800px){
-  flex: 1;
+  display: inline-block;
+  width: 95%;
 }
 `

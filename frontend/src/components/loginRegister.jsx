@@ -53,7 +53,6 @@ function LoginRegister() {
     } = useFormLogin(initialForm, validationsForm, register)
 
     return <ContainerLogin>
-  
         <form  onSubmit={handleSubmit}>
         <Notify errorsMessage={errorsMessage} completeMessage={completeMessage} />
             {
@@ -106,7 +105,6 @@ function LoginRegister() {
                         <p> ¿Ya eres mienbro de BTG? <b onClick={() => {setRegister(false)}}>Iniciar sesión</b></p> : <p> ¿Quieres ser parte de BTG? <b onClick={() => setRegister(true)}>Unirse ahora </b></p>
                 }
         </form>
-
     </ContainerLogin>;
 }
 

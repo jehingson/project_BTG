@@ -62,20 +62,17 @@ function CreateQuestion() {
   return <CreateQuestionContent>
     <div className="top-box">
       <Notify errorsMessage={errorsMessage} completeMessage={completeMessage} />
-      <img src={users.photo ? users.photo : 'https://cdn.icon-icons.com/icons2/827/PNG/128/user_icon-icons.com_66546.png'} alt="" />
+      <img src='https://cdn.icon-icons.com/icons2/827/PNG/128/user_icon-icons.com_66546.png' alt="" />
       <form onSubmit={handleSubmit}>
-        <input
-          placeholder="Escribe el titulo de tu publicación"
-          type="text"
-          name="title"
-          required
-          value={form.title}
-          onChange={handleChange}
-          onBlur={handleBlur}
-        />
+      <label>Selecciona tipo de solicitud</label>
+        <select name="select">
+          <option value="value1">Value 1</option>
+          <option value="value2" selected>Value 2</option>
+          <option value="value3">Value 3</option>
+        </select>
         {errors.title && <p className="error input">{errors.title}</p>}
         <textarea
-          placeholder="Escribe la description de tu publicacion"
+          placeholder="Escribe tu solicitud"
           type="text"
           name="description"
           value={form.description}
@@ -83,13 +80,14 @@ function CreateQuestion() {
           onBlur={handleBlur}
         />
         {errors.description && <p className="error text">{errors.description}</p>}
-        <button type="submit">Publicar</button>
+        <br />
+        <button type="submit">Enviar</button>
       </form>
     </div>
     <div className="box-footer">
       <div className="inputIcon">
         <CameraIcon className="photo" />
-        <input type="file" name="file" id="file-up" onChange={hendleUpload} />
+        <input type="file" name="file" id="file-up"/>
         <p>Fotos</p>
       </div>
       <div className="inputIcon">
@@ -101,22 +99,13 @@ function CreateQuestion() {
         <p>Sentimientos/actividad</p>
       </div>
     </div>
-    {
-      images && <div className="image-create">
-        <p className="remove" onClick={removeImage}>Remove</p>
-        <img className="h-10 object-contain" src={images} alt="" />
-      </div>
-    }{
-      loading && <div><Loading /></div>
-    }
-
   </CreateQuestionContent>;
 }
 
 export default CreateQuestion;
 
 const CreateQuestionContent = styled.div`
-  background: #800040;
+  background: #efefef;
   border-radius: .25rem;
   position: relative;
   color: #fff;
@@ -137,29 +126,43 @@ const CreateQuestionContent = styled.div`
       object-fit: fit;
       border-radius: 50%;
       margin-top: -5px;
-      margin-left: -10px;
+      margin-left: -29px;
     }
     >form{
       z-index:0;
       box-sizing: border-box;
-      margin-left: 20px;
+      margin-left: 10px;
       width: 70%;
       display: flex;
-      align-items: center;
+      align-items: start;
       flex-direction: column;
       position: relative;
-      >input, >textarea{
-        padding: 15px 20px;
-        border: 1px solid #172B3A;
+      label{
+        text-align: left;
+        display: inline-block;
+        width:100%;
+        color: var(--blue-secondary);
+        font-weight: 700;
+        opacity: 0.8;
+        padding: 10px 20px;
+      }
+      >input, >textarea, >select {
+        padding: 10px 20px;
+        border: 1px solid #0F202D;
         font-size: 16px;
         font-weight: 700;
         margin-left: 20px;
         outline: 0;
         width: 100%;
         border-radius: 5px;
-        background: #0F202D;
-        color: #8B959C;
+        background: #ececff;
+        color: #000;
         z-index:1;
+      }
+      >select{
+        width: 70%;
+        position: relative;
+
       }
       >textarea{
         margin-top: 20px;
@@ -187,13 +190,12 @@ const CreateQuestionContent = styled.div`
         color: rgb(214, 66, 146);
         font-size: 14px;
         &.input{
-          left: 0;
-          top: -5px;
-
+          left: 20px;
+          top: 25px;
         }
         &.text{
-          bottom: 23px;
-          left: 0;
+          bottom: 50px;
+          left: 20px;
         }
       }
      
@@ -215,15 +217,6 @@ const CreateQuestionContent = styled.div`
        padding: 5px;
        border-radius: 5px;
      } 
-     .photo{
-       color: #20AE73;
-       cursor: pointer;
-       &:hover{
-         opacity: .8;
-         background: #172B3A;
-         transition: all ease in .3;
-       }
-     }
      p{
        font-size:13px;
        color: #8b959c;
@@ -242,31 +235,5 @@ const CreateQuestionContent = styled.div`
        cursor: pointer;
        }
      }
-
     }
-  .image-create{
-    width:100%;
-    height: 300px;
-    overflow: hidden;
-    padding: 5px;
-    >img{
-      margin-top: 10px;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .remove{
-        font-size: 14px;
-        padding: 5px 15px;
-        border-radius: 5px;
-        background: #d64292;;
-        width: 50px;
-        color: #ebeced;
-        font-weight: 600;
-        cursor: pointer;
-        &:hover{
-          opacity: .8;
-        }
-    }
-  }
 `

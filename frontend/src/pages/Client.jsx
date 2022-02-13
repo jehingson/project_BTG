@@ -1,8 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import HomeClient from '../components/homeClient'
+import HomeClient from '../components/HomeClient'
 import Profile from '../components/Profile'
-
 
 function Client() {
   return (
@@ -12,9 +11,7 @@ function Client() {
     </HomeWrapper>
   )
 }
-
 export default Client
-
 
 const HomeWrapper = styled.div`
 max-width: 1300px;

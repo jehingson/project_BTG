@@ -54,6 +54,7 @@ const login = {
     },
     resolve: async (_, args) => {
         const { email, password } = args
+        console.log('ss', args)
         const user = await User.findOne({ email }).select('+password')
         if (!user) throw new Error('Usuario o contraseña incorrecto!')
         const validatePassword = await bcrypt.compare(password, user.password)
