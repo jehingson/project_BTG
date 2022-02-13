@@ -45,8 +45,16 @@ const allQuestion = {
     type: new GraphQLList(QuestionType),
     description: 'Todas las solicitudes del clientes',
     resolve: (_, __, { user }) => {
-        if (!user) throw new Error("No autenticado!")
+        if (!user || user.role !== 'admin') throw new Error("No autenticado!")
         return Question.find().sort({ createdAt: -1 })
+    }
+}
+const allQuestionClient = {
+    type: new GraphQLList(QuestionType),
+    description: 'Todas las solicitudes del clientes',
+    resolve: (_, __, { user }) => {
+        if (!user || user.role !== 'client') throw new Error("No autenticado!")
+        return Question.find({clientId: user._id}).sort({ createdAt: -1 })
     }
 }
 
@@ -61,5 +69,6 @@ module.exports = {
     getUser,
     allPetition,
     allQuestion,
+    allQuestionClient,
     getOneQuestion
 }

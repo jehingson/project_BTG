@@ -4,7 +4,8 @@ const {
     getUser, 
     allPetition,
     allQuestion,
-    getOneQuestion
+    getOneQuestion,
+    allQuestionClient
 } = require('./queries')
 const { 
     register, 
@@ -21,6 +22,7 @@ const QueryType = new GraphQLObjectType({
         getUser,
         allPetition,
         allQuestion,
+        allQuestionClient,
         getOneQuestion
     }
 })
