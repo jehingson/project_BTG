@@ -1,14 +1,14 @@
-const { 
-    GraphQLObjectType, 
-    GraphQLID, 
-    GraphQLString, 
-    GraphQLList 
+const {
+    GraphQLObjectType,
+    GraphQLID,
+    GraphQLString,
+    GraphQLList
 } = require("graphql")
 
-const { 
-    User, 
-    Petition, 
-    Answer 
+const {
+    User,
+    Petition,
+    Answer
 } = require("../models")
 
 const UserType = new GraphQLObjectType({
@@ -16,6 +16,7 @@ const UserType = new GraphQLObjectType({
     description: "Tipo de dato del usuaurio",
     fields: {
         id: { type: GraphQLID },
+        token: { type: GraphQLString },
         username: { type: GraphQLString },
         email: { type: GraphQLString },
         createdAt: { type: GraphQLString },
@@ -49,8 +50,8 @@ const QuestionType = new GraphQLObjectType({
         },
         answer: {
             type: new GraphQLList(AnswerType),
-            resolve(parent){
-                return Answer.find({questionId: parent.id})
+            resolve(parent) {
+                return Answer.find({ questionId: parent.id })
             }
 
         }

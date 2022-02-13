@@ -13,7 +13,8 @@ const answerSchema = new Schema({
         type: String,
         required: true,
     }
-},{
+},
+{
     timestamp: true,
     versionKey: false,
 })

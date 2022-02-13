@@ -24,8 +24,9 @@ const getUser = {
     args: {
         id: { type: GraphQLID }
     },
-    resolve: (_, { id }) => {
-        return User.findById(id)
+    resolve: (_,__, { user }) => {
+        if (!user) throw new Error("No autenticado!")
+        return User.findById(user._id)
     }
 }
 

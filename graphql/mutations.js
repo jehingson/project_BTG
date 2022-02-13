@@ -8,6 +8,7 @@ const {
 const { createJWTToken } = require('../util/auth');
 
 const bcrypt = require('bcrypt');
+const { UserType } = require("./typeDefs");
 
 const register = {
     type: GraphQLString,
@@ -45,7 +46,7 @@ const register = {
 };
 
 const login = {
-    type: GraphQLString,
+    type: UserType,
     description: "Iniciar sesion, retorna un token",
     args: {
         email: { type: GraphQLString },
@@ -54,10 +55,17 @@ const login = {
     resolve: async (_, args) => {
         const { email, password } = args
         const user = await User.findOne({ email }).select('+password')
+        if (!user) throw new Error('Usuario o contraseña incorrecto!')
         const validatePassword = await bcrypt.compare(password, user.password)
-        if (!user || !validatePassword) throw new Error('Usuario o contraseña incorrecto!')
+        if (!validatePassword) throw new Error('Usuario o contraseña incorrecto!')
         const token = createJWTToken({ _id: user._id, username: user.username, email: user.email, role: user.role })
-        return token
+        return {
+            id: user._id, 
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            token
+        }
     }
 }
 
