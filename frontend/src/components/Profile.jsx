@@ -26,9 +26,7 @@ const ProfileContent = styled.div`
 flex: 0.35;
 position: relative;
 overflow: hidden;
-background-color: var(--fondo);
 height: 30vh;
-box-shadow: -1px -4px 7px -1px rgba(232,211,232,0.43);
 button{
         border: none;
         font-size: 14px;
@@ -43,6 +41,13 @@ button{
     padding: 20px;
     padding:20px;
     position: fixed;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 2px 0px;
+    width: 29%;
+    margin: 20px 20px;
+    @media(max-width: 800px){
+      width: 100%;
+      margin: 20px 0px;
+    }
     >h4{
       font-size: 20px;
       color:ver(--blue-secondary);

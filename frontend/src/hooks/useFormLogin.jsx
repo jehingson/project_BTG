@@ -47,11 +47,9 @@ export const useFormLogin = (initialForm, validateFrom, register) => {
     const [loginSession] = useMutation(LOGIN, {
         onCompleted: (data) => {
             const user = data.login
-            console.log('user', user)
             activateAuth({...user})
         },
         onError: (error) => {
-            console.log('err', error)
             notifyErrors(error.graphQLErrors[0].message)
         }
     })
