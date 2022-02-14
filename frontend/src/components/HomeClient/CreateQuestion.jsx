@@ -1,85 +1,102 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { EmojiHappyIcon } from "@heroicons/react/outline";
 import { CameraIcon, VideoCameraIcon } from "@heroicons/react/solid";
 import { Notify } from '../Notify';
-import { useFormAddPost } from '../../hooks/useFormAddPost';
-import Loading from '../Loading';
-import { Context } from '../../context/Context';
-
-
-const initialForm = {
-  title: '',
-  description: '',
-  image: ''
-}
-
-const validationsForm = (form) => {
-  let errors = {};
-  if (!form.title.trim()) {
-    errors.title = "El titulo es requerido"
-  }
-  if (form.title.trim().length > 50) {
-    errors.title = "Titulo debe ser menor a 50 caracteres"
-  }
-
-  if (!form.description.trim()) {
-    errors.description = "La descripción es requerida"
-  }
-  if (form.description.trim().length > 240) {
-    errors.description = "Descripción debe ser menor de 240 caracteres"
-  }
-  return errors
-}
+import { useMutation, useQuery } from '@apollo/client';
+import { FETCH_PETITION } from '../../graphql/queries';
+import { CREATE_QUESTION } from '../../graphql/mutations';
 
 
 function CreateQuestion() {
-  const { users } = useContext(Context)
-  const [images, setImages] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [errorsMessage, setErrosMessage] = useState(null)
+  const [completeMessage, setCompledMessage] = useState(null)
+  const { data = [] } = useQuery(FETCH_PETITION)
+  const [id, setId] = useState('')
+  const [question, setQuestion] = useState('')
+  const [error, setError] = useState(false)
 
-  const {
-    form,
-    handleChange,
-    handleBlur,
-    handleSubmit,
-    errorsMessage,
-    completeMessage,
-    errors,
-  } = useFormAddPost(initialForm, validationsForm, images, setImages)
 
-  const hendleUpload = e => {
-    const file = e.target.files[0]
-    if (!file) return
-    setLoading(true)
+  const notifyCompled = message => {
+    setCompledMessage(message)
+    setId('')
+    setQuestion('')
+    setTimeout(() => {
+      setCompledMessage(null)
+    }, 3000)
+  }
+  const notifyErrors = message => {
+    setErrosMessage(message)
+    setTimeout(() => {
+      setErrosMessage(null)
+    }, 3000)
   }
 
-  const removeImage = () => {
-    setImages(null)
-  }
+  const [addQuestion] = useMutation(CREATE_QUESTION, {
+    onCompleted: (data) => {
+      console.log('ee', data)
+      notifyCompled('Publicacion creada con éxito')
+    },
+    onError: (error) => {
+      console.error(error)
+      notifyErrors('Error con esta peticion, intentelo nuevamenta mas tarde!');
+    }
+  })
 
+  
+
+  const handleSelect = (e) => {
+    setId(e.target.value)
+  }
+  const handleChange = (e) => {
+    setQuestion(e.target.value)
+  }
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    setError(false)
+    if (id && question && question.length < 300) {
+      console.log('id', id, question)
+
+      addQuestion({
+        variables: {
+          question: question,
+          petitionId: id,
+        }
+      })
+    } else {
+      setError(true)
+    }
+
+  }
 
   return <CreateQuestionContent>
     <div className="top-box">
       <Notify errorsMessage={errorsMessage} completeMessage={completeMessage} />
       <img src='https://cdn.icon-icons.com/icons2/827/PNG/128/user_icon-icons.com_66546.png' alt="" />
       <form onSubmit={handleSubmit}>
-      <label>Selecciona tipo de solicitud</label>
-        <select name="select">
-          <option value="value1">Value 1</option>
-          <option value="value2" selected>Value 2</option>
-          <option value="value3">Value 3</option>
-        </select>
-        {errors.title && <p className="error input">{errors.title}</p>}
+        <label>Selecciona tipo de solicitud</label>
+        {
+          data.allPetition &&
+          <select name="select" onChange={handleSelect} value={id} >
+            <option value="" selected>Seleccionar</option>
+            <option value={data.allPetition[0].id}>Petición</option>
+            <option value={data.allPetition[1].id} >Queja</option>
+            <option value={data.allPetition[2].id}>Reclamo</option>
+          </select>
+        }
+        {error && !id && <p className="error input">El tipo de solicitud es requerido</p>
+        }
         <textarea
           placeholder="Escribe tu solicitud"
           type="text"
           name="description"
-          value={form.description}
+          value={question}
           onChange={handleChange}
-          onBlur={handleBlur}
         />
-        {errors.description && <p className="error text">{errors.description}</p>}
+        {error && !question && <p className="error text">La description de tu solicitud es requerido</p>
+        }
+        {error && question.length > 300 && <p className="error text">La description debe tener max 300 caracteres</p>
+        }
         <br />
         <button type="submit">Enviar</button>
       </form>
@@ -87,7 +104,6 @@ function CreateQuestion() {
     <div className="box-footer">
       <div className="inputIcon">
         <CameraIcon className="photo" />
-        <input type="file" name="file" id="file-up"/>
         <p>Fotos</p>
       </div>
       <div className="inputIcon">

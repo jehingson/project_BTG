@@ -43,36 +43,11 @@ export const UPDATE_USER = gql`
   }
 }
 `
-
-export const ADD_POST = gql`
-mutation createPost($title: String!, $description: String!, $image: String!){
-  addPost(
-    title: $title,
-    description: $description,
-    image: $image
-  ) {
-    id
-    title
-    description
-    image
-  }
-}
-`
-
-export const UPDATE_POST = gql`
-mutation postUpdate($id: Int!, $title: String!, $description: String!) {
-  updatePost(id: $id, title: $title, description: $description) {
-    id
-    description
-    title
-  }
-}
-`
-
-export const DELETE_POST = gql`
-mutation deletePost($id: Int!) {
-  deletePost(id: $id) {
-  id
-  }
+export const CREATE_QUESTION = gql`
+mutation addQuestion($petitionId: ID!, $question: String!){
+  createQuestion(
+    petitionId: $petitionId,
+    question: $question
+  )
 }
 `

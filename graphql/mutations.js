@@ -80,6 +80,7 @@ const createQuestion = {
     async resolve(_, { question, petitionId }, { user }) {
         if (!user || user.role !== 'client') throw new Error("No autenticado!")
         try {
+            console.log('sss', question, petitionId)
             await Petition.findById(petitionId)
             const newQuestion = new Question({
                 clientId: user._id,

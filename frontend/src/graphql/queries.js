@@ -28,3 +28,11 @@ export const FETCH_USER = gql`
       }
   }
 `
+export const FETCH_PETITION = gql`
+ query {
+   allPetition{
+        id
+        name
+      }
+  }
+`

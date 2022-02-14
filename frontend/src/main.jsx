@@ -2,11 +2,16 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
 import App from './App'
-import { ApolloClient, ApolloLink, InMemoryCache, ApolloProvider, from } from '@apollo/client';
+import { ApolloClient, ApolloLink, InMemoryCache, ApolloProvider, from, HttpLink } from '@apollo/client';
 import Context from './context/Context'
 import { createUploadLink } from 'apollo-upload-client'
 
+const httpLink = new HttpLink({ uri: 'http://localhost:4000/graphql' });
 
+// createUploadLink({
+//   uri: 'http://localhost:4000/graphql',
+//   fetch
+// })
 
 const activityMiddleware = new ApolloLink((operation, forward) => {
   const token = window.sessionStorage.getItem('token')
@@ -25,10 +30,7 @@ const client = new ApolloClient({
   connectToDevTools: true,
   link: from([
     activityMiddleware,
-    createUploadLink({
-      uri: 'http://localhost:4000/graphql',
-      fetch
-    })
+    httpLink
   ]),
   onError: err => {
     if (err) {
