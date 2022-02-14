@@ -15,6 +15,7 @@ export default Answer
 
 const AnswerContent = styled.div`
     margin-top:-10px;
+    margin-bottom:15px;
     padding: 10px 20px;
     border: 1px solid #ddd;
     background-color: #fff;

@@ -35,7 +35,7 @@ function CreateQuestion() {
   const [addQuestion] = useMutation(CREATE_QUESTION, {
     onCompleted: (data) => {
       console.log('ee', data)
-      notifyCompled('Publicacion creada con éxito')
+      notifyCompled('Solicitud creada con éxito')
     },
     onError: (error) => {
       console.error(error)
