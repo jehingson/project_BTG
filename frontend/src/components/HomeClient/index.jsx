@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components';
-import AllQuestion from './AllQuestion'
+import AllQuestionUser from './AllQuestionUser'
 import CreateQuestion from './CreateQuestion'
 
 
@@ -9,7 +9,7 @@ function HomeClient() {
   return (
     <ClientContent>
       <CreateQuestion />
-      <AllQuestion />
+      <AllQuestionUser />
     </ClientContent>
   )
 }

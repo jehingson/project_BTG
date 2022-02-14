@@ -1,19 +1,27 @@
 import { gql } from '@apollo/client';
 
 
-export const All_POST = gql`
+export const All_QUESTIONS_CLIENT = gql`
  query{
-    allPost{
+    allQuestionClient{
       id
-	  title
-      description
-      image
+      question
       createdAt
-   	  user{
-        uid
-        username
-        photo
-    }
+      client{
+        id
+      }
+      petition{
+        id
+        name
+      }
+      answer{
+        id
+        answer
+        admin{
+          id
+          username
+        }
+      }
   }
   }
 `

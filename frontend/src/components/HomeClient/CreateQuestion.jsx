@@ -78,7 +78,7 @@ function CreateQuestion() {
         {
           data.allPetition &&
           <select name="select" onChange={handleSelect} value={id} >
-            <option value="" selected>Seleccionar</option>
+            <option value="">Seleccionar</option>
             <option value={data.allPetition[0].id}>Petición</option>
             <option value={data.allPetition[1].id} >Queja</option>
             <option value={data.allPetition[2].id}>Reclamo</option>
