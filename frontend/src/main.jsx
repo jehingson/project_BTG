@@ -4,9 +4,8 @@ import './index.css'
 import App from './App'
 import { ApolloClient, ApolloLink, InMemoryCache, ApolloProvider, from, HttpLink } from '@apollo/client';
 import Context from './context/Context'
-import { createUploadLink } from 'apollo-upload-client'
 
-const httpLink = new HttpLink({ uri: 'http://localhost:4000/graphql' });
+const httpLink = new HttpLink({ uri: 'https://btg-nodejs-mongodb-graphql.herokuapp.com/graphql' });
 
 // createUploadLink({
 //   uri: 'http://localhost:4000/graphql',
