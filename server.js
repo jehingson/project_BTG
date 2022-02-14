@@ -1,3 +1,5 @@
+require('dotenv/config');
+
 const express = require('express');
 const { graphqlHTTP } = require('express-graphql');
 const schema = require('./graphql/schema')
@@ -14,14 +16,20 @@ app.use(cookieParser())
 app.use(authenticate)
 app.use(cors());
 
-app.get('/', (req, res) => {
-    res.send('Welcome api graphql')
-})
+
+if(process.env.NODE_ENV === 'production'){
+    app.use(express.static('frontend/dist'))
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(__dirname, 'frontend','dist', 'index.html' ))
+    })
+  }
 
 app.use('/graphql', graphqlHTTP({
     schema,
     graphiql: true
 }))
 
-app.listen(4000)
-console.log('server in on port: 4000')
+const port = process.env.PORT || 4000;
+
+app.listen(port)
+console.log('server in on port: ' + port)
